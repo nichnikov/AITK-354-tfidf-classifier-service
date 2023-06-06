@@ -1,5 +1,4 @@
 from typing import List
-from src.data_types import Parameters
 from pydantic import BaseModel, Field
 
 

@@ -1,29 +1,28 @@
 """
 классификатор KNeighborsClassifier в /home/an/Data/Yandex.Disk/dev/03-jira-tasks/aitk115-support-questions
 """
-from src.start import answers_by_labels
-from src.data_types import Parameters
-from src.texts_processing import TextsTokenizer
+
 from src.config import logger
 from collections import namedtuple
 
 # https://stackoverflow.com/questions/492519/timeout-on-a-function-call
 
-class FastAnswerClassifier:
+class TechSupportClassifier:
     """Объект для оперирования MatricesList и TextsStorage"""
-
-    def __init__(self, tokenizer: TextsTokenizer, 
-                 parameters: Parameters, 
+    def __init__(self, 
+                 tokenizer, 
+                 parameters, 
                  gensim_dict, 
                  tfidf_model, 
                  gensim_index,
-                 answers_by_labels: dict):
+                 answers):
+
         self.tkz = tokenizer
         self.prm = parameters
         self.tfidf = tfidf_model
         self.dct = gensim_dict
         self.index = gensim_index
-        self.answers = answers_by_labels
+        self.answers = answers
 
     async def searching(self, text: str, pubid: int, score: float):
         """searching etalon by  incoming text"""

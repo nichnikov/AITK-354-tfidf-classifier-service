@@ -2,24 +2,23 @@
 import os
 import uvicorn
 from fastapi import FastAPI
-from src.start import classifier
+from src.start import (classifier, 
+                       pubs)
 from src.config import logger
-from src.data_types import (TemplateIds,
-                            SearchData)
+from src.data_types import SearchData
 
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
 app = FastAPI(title="ExpertBotFastText")
 
 
 @app.post("/api/search")
-# @timeit
 async def search(data: SearchData):
     """searching etalon by  incoming text"""
     logger.info("searched pubid: {} searched text: {}".format(str(data.pubid), str(data.text)))
-    if data.pubid in [6, 9]:
+    if data.pubid in pubs:
         try:
             logger.info("searched text without spellcheck: {}".format(str(data.text)))
-            result = await classifier.tested_searching(str(data.text), data.pubid, 0.95)
+            result = await classifier.searching(str(data.text), data.pubid, 0.3)
             return result
         except Exception:
             logger.exception("Searching problem with text {} in pubid {}".format(str(data.text), str(data.pubid)))

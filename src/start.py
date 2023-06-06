@@ -1,14 +1,14 @@
 import os
+import pandas as pd
+from itertools import chain
+from gensim.models import TfidfModel
+from gensim.corpora import Dictionary
+from gensim.similarities import MatrixSimilarity
+from src.classifiers import TechSupportClassifier
 from src.texts_processing import TextsTokenizer
-from src.data_types import Parameters
 from src.utils import group_by_lbs
 from src.config import (PROJECT_ROOT_DIR, 
                         parameters)
-import pandas as pd
-from gensim.similarities import MatrixSimilarity
-from gensim.models import TfidfModel
-from gensim.corpora import Dictionary
-from itertools import chain
 
 
 stopwords = []
@@ -28,7 +28,7 @@ texts_by_groups = sorted(list(group_by_lbs(groups_texts)), key=lambda x: x[0])
 answers_by_labels = {l: a for l, a in set((lb, ans) for lb, ans in 
                                           zip(etalons_df["label"], etalons_df["templateText"]))}
 
-texs = list(etalons_df["text"])
+texs = list(etalons_df["query"])
 tokens = tokenizer(texs)
 
 dct = Dictionary(tokens)
@@ -40,22 +40,13 @@ corpus_tfidf = tfidf[corpus]
 
 index = MatrixSimilarity(tfidf[corpus],  num_features=len(dct))
 
-'''
-for num, d in enumerate(test_dicts_):
-   t = time.time()
-   text = d["query"]
-   test_tokens = tokenizer([text])
-   test_corpus = dct.doc2bow(test_tokens[0])
-   test_vector = tfidf[test_corpus]
-   sims = index[test_vector]
-   tfidf_tuples = [(num, scr) for num, scr in enumerate(list(sims))]
-   tfidf_best = sorted(tfidf_tuples, key=lambda x: x[1], reverse=True)[0]
-   d["class"] = tfidf_best[0]
-   d["tfIdf_score"] = tfidf_best[1]
-   print(num, text, time.time() - t)
+classifier = TechSupportClassifier(
+                tokenizer=tokenizer, 
+                parameters=parameters, 
+                gensim_dict=dct, 
+                tfidf_model=tfidf, 
+                gensim_index=index,
+                answers=answers_by_labels)
 
-results_df = pd.DataFrame(test_dicts_)
-print(results_df)
-results_df.to_csv(os.path.join("data", "test_result_tfidf.csv"), sep="\t", index=False)
-
-'''
+pubs_df = pd.read_csv(os.path.join("data", "pubs.csv"), sep="\t")
+pubs = list(pubs_df["pubid"])
