@@ -1,4 +1,6 @@
+import os
 import re
+from src.config import PROJECT_ROOT_DIR
 from pymystem3 import Mystem
 from itertools import chain
 from itertools import groupby
@@ -12,6 +14,8 @@ def group_gen(asc_dsc: list):
         yield k, [x[0] for x in v]
 
 
+# os.chmod(file, 0o0777)
+
 class TextsTokenizer:
     """Tokenizer"""
 
@@ -19,7 +23,8 @@ class TextsTokenizer:
         self.stopwords = []
         self.synonyms = []
         self.stop_words_patterns = re.compile("")
-        self.m = Mystem()
+        # self.m = Mystem(mystem_bin=os.path.join(PROJECT_ROOT_DIR, "mystem"))
+        self.m = Mystem(mystem_bin="mystem")
 
     def texts2tokens(self, texts: list[str]) -> list[str]:
         """Lemmatization for texts in list. It returns list with lemmatized texts"""
