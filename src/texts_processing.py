@@ -23,7 +23,9 @@ class TextsTokenizer:
         self.stopwords = []
         self.synonyms = []
         self.stop_words_patterns = re.compile("")
-        # self.m = Mystem(mystem_bin=os.path.join(PROJECT_ROOT_DIR, "mystem"))
+        mystem_root = os.path.join(PROJECT_ROOT_DIR, "mystem")
+        # print("mystem_root:", mystem_root)
+        self.m = Mystem(mystem_bin=mystem_root)
         self.m = Mystem(mystem_bin="mystem")
 
     def texts2tokens(self, texts: list[str]) -> list[str]:
