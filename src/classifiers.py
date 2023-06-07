@@ -42,6 +42,8 @@ class TechSupportClassifier:
                     return search_result
                 else:
                     return {"templateId": 0, "templateText": ""}
+            else:
+                return {"templateId": 0, "templateText": ""}
         except Exception:
             logger.exception("Searching problem with text: {}".format(str(text)))
             return {"templateId": 0, "templateText": ""}
