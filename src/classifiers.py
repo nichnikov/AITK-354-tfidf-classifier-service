@@ -24,7 +24,7 @@ class TechSupportClassifier:
         self.index = gensim_index
         self.answers = answers
 
-    async def searching(self, text: str, pubid: int, score: float):
+    async def searching(self, text: str):
         """searching etalon by  incoming text"""
         try:
             tokens = self.tkz([text])
@@ -32,7 +32,7 @@ class TechSupportClassifier:
                 in_corpus = self.dct.doc2bow(tokens[0])
                 in_vector = self.tfidf[in_corpus]
                 sims = self.index[in_vector]
-                tfidf_tuples = [(num, scr) for num, scr in enumerate(list(sims)) if scr >= score]
+                tfidf_tuples = [(num, scr) for num, scr in enumerate(list(sims), start=1) if scr >= self.prm.score]
                 if tfidf_tuples:
                     tfidf_best = sorted(tfidf_tuples, key=lambda x: x[1], reverse=True)[0]
                     best_id = tfidf_best[0]

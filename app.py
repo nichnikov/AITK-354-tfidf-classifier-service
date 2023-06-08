@@ -4,7 +4,8 @@ import uvicorn
 from fastapi import FastAPI
 from src.start import (classifier, 
                        pubs)
-from src.config import logger
+from src.config import (logger,
+                        parameters)
 from src.data_types import SearchData
 
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
@@ -18,7 +19,7 @@ async def search(data: SearchData):
     if data.pubid in pubs:
         try:
             logger.info("searched text without spellcheck: {}".format(str(data.text)))
-            result = await classifier.searching(str(data.text), data.pubid, 0.3)
+            result = await classifier.searching(str(data.text))
             return result
         except Exception:
             logger.exception("Searching problem with text {} in pubid {}".format(str(data.text), str(data.pubid)))

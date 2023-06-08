@@ -8,6 +8,7 @@ class Parameters(BaseModel):
     stopwords_files: List[str]
     max_hits: int
     chunk_size: int
+    score: float
 
 
 class TemplateIds(BaseModel):
