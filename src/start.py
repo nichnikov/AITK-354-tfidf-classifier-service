@@ -7,9 +7,8 @@ from gensim.similarities import MatrixSimilarity
 from src.classifiers import TechSupportClassifier
 from src.texts_processing import TextsTokenizer
 from src.utils import group_by_lbs
-from src.config import (PROJECT_ROOT_DIR, 
+from src.config import (PROJECT_ROOT_DIR,
                         parameters)
-
 
 stopwords = []
 if parameters.stopwords_files:
@@ -21,32 +20,37 @@ if parameters.stopwords_files:
 tokenizer = TextsTokenizer()
 tokenizer.add_stopwords(stopwords)
 
-etalons_df = pd.read_csv(os.path.join("data", "etalons.csv"), sep="\t")
+etalons_df = pd.read_csv(os.path.join(PROJECT_ROOT_DIR, "data", "etalons.csv"), sep="\t")
 groups_texts = list(zip(etalons_df["label"], etalons_df["query"]))
-texts_by_groups = sorted(list(group_by_lbs(groups_texts)), key=lambda x: x[0])
 
-answers_by_labels = {l: a for l, a in set((lb, ans) for lb, ans in 
+# groups_texts_sorted = sorted(groups_texts, key=lambda x: x[0])
+texts_by_groups = sorted(list(group_by_lbs(sorted(groups_texts, key=lambda x: x[0]))), key=lambda x: x[0])
+
+answers_by_labels = {l: a for l, a in set((lb, ans) for lb, ans in
                                           zip(etalons_df["label"], etalons_df["templateText"]))}
 
 texs = list(etalons_df["query"])
 tokens = tokenizer(texs)
 
 dct = Dictionary(tokens)
+
 texts_by_groups_tokenized = [[x for x in chain(*tokenizer(txs))] for grp, txs in texts_by_groups]
+print(texts_by_groups_tokenized)
+print(len(texts_by_groups_tokenized))
 corpus = [dct.doc2bow(item) for item in texts_by_groups_tokenized]
 
 tfidf = TfidfModel(corpus)
 corpus_tfidf = tfidf[corpus]
 
-index = MatrixSimilarity(tfidf[corpus],  num_features=len(dct))
+index = MatrixSimilarity(tfidf[corpus], num_features=len(dct))
 
 classifier = TechSupportClassifier(
-                tokenizer=tokenizer, 
-                parameters=parameters, 
-                gensim_dict=dct, 
-                tfidf_model=tfidf, 
-                gensim_index=index,
-                answers=answers_by_labels)
+    tokenizer=tokenizer,
+    parameters=parameters,
+    gensim_dict=dct,
+    tfidf_model=tfidf,
+    gensim_index=index,
+    answers=answers_by_labels)
 
-pubs_df = pd.read_csv(os.path.join("data", "pubs.csv"), sep="\t")
+pubs_df = pd.read_csv(os.path.join(PROJECT_ROOT_DIR, "data", "pubs.csv"), sep="\t")
 pubs = list(pubs_df["pubid"])

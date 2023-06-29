@@ -5,15 +5,17 @@
 from src.config import logger
 from collections import namedtuple
 
+
 # https://stackoverflow.com/questions/492519/timeout-on-a-function-call
 
 class TechSupportClassifier:
     """Объект для оперирования MatricesList и TextsStorage"""
-    def __init__(self, 
-                 tokenizer, 
-                 parameters, 
-                 gensim_dict, 
-                 tfidf_model, 
+
+    def __init__(self,
+                 tokenizer,
+                 parameters,
+                 gensim_dict,
+                 tfidf_model,
                  gensim_index,
                  answers):
 
@@ -32,6 +34,7 @@ class TechSupportClassifier:
                 in_corpus = self.dct.doc2bow(tokens[0])
                 in_vector = self.tfidf[in_corpus]
                 sims = self.index[in_vector]
+                # print([(num, scr) for num, scr in enumerate(list(sims), start=1)])
                 tfidf_tuples = [(num, scr) for num, scr in enumerate(list(sims), start=1) if scr >= self.prm.score]
                 if tfidf_tuples:
                     tfidf_best = sorted(tfidf_tuples, key=lambda x: x[1], reverse=True)[0]
