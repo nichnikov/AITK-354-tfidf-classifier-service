@@ -35,8 +35,6 @@ tokens = tokenizer(texs)
 dct = Dictionary(tokens)
 
 texts_by_groups_tokenized = [[x for x in chain(*tokenizer(txs))] for grp, txs in texts_by_groups]
-print(texts_by_groups_tokenized)
-print(len(texts_by_groups_tokenized))
 corpus = [dct.doc2bow(item) for item in texts_by_groups_tokenized]
 
 tfidf = TfidfModel(corpus)
